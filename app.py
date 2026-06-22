@@ -4,21 +4,28 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 from utils.predict import predict_diabetes
-from PIL import Image
-
+from ui.components import (
+    render_dashboard_metrics,
+    render_feature_cards,
+    render_input_summary,
+    render_page_header,
+    render_result_card,
+)
 from ui.theme import (
-    ACCENT_BG,
     BG,
     PRIMARY,
     SECONDARY,
     field_label,
     inject_medical_styles,
-    render_dashboard_metrics,
     render_disclaimer,
-    render_result_card,
     render_sidebar_logo,
 )
-from ui.presentation_pages import show_about_project, show_researcher_info
+from ui.presentation_pages import (
+    show_about_project,
+    show_demo_guide,
+    show_how_it_works,
+    show_researcher_info,
+)
 
 BASE_DIR = Path(__file__).parent
 LOGO_PATH = BASE_DIR / "assets" / "Diabetes_app_image.png"
@@ -76,21 +83,21 @@ translations = {
 # AUTHENTIFICATION
 # -------------------------
 def authenticate():
-    st.markdown(
-        f'<div class="medical-card" style="max-width: 480px; margin: 2rem auto; background-color: {ACCENT_BG};">',
-        unsafe_allow_html=True,
+    render_page_header(
+        translations["login_title"][LANG],
+        "Accès sécurisé à la démonstration clinique."
+        if LANG == "Français"
+        else "Secure access to the clinical demonstration.",
     )
-    st.title(translations["login_title"][LANG])
     username_input = st.text_input(translations["username_label"][LANG])
     password_input = st.text_input(translations["password_label"][LANG], type="password")
 
-    if st.button(translations["login_button"][LANG], use_container_width=True):
+    if st.button(translations["login_button"][LANG], width="stretch"):
         if username_input == USERNAME and password_input == PASSWORD:
             st.session_state["authenticated"] = True
             st.rerun()
         else:
             st.error(translations["login_failed"][LANG])
-    st.markdown("</div>", unsafe_allow_html=True)
 
 
 if "authenticated" not in st.session_state:
@@ -117,6 +124,8 @@ menu_options = {
     "Français": [
         "🏠 Accueil",
         "🎓 À propos du projet",
+        "⚙️ Fonctionnement",
+        "📋 Guide démo",
         "👨‍⚕️ Équipe de recherche",
         "🤖 Prédiction",
         "📈 Résultat",
@@ -129,6 +138,8 @@ menu_options = {
     "English": [
         "🏠 Home",
         "🎓 About the Project",
+        "⚙️ How It Works",
+        "📋 Demo Guide",
         "👨‍⚕️ Research Team",
         "🤖 Prediction",
         "📈 Result",
@@ -153,61 +164,62 @@ page = st.sidebar.radio(
 # ROUTAGE DE PAGES
 # -------------------------
 def show_home():
-    render_dashboard_metrics(LANG)
+    if LANG == "Français":
+        render_page_header(
+            "Tableau de bord clinique",
+            "Une interface de démonstration pour explorer et présenter l'estimation du risque de diabète.",
+        )
+        cards = [
+            ("01", "Estimation du risque", "Tester un patient à partir de huit variables cliniques.", "Disponible"),
+            ("02", "Saisie patient", "Utiliser un formulaire guidé et bilingue.", "Disponible"),
+            ("03", "Performance", "Présenter les résultats et courbes du modèle.", "Présentation"),
+            ("04", "Test CSV", "Évaluer plusieurs lignes dans un fichier structuré.", "Disponible"),
+        ]
+        steps = """
+        1. Ouvrez **Prédiction** et saisissez les informations du patient.
+        2. Consultez **Résultat**, puis les **Recommandations**.
+        3. Terminez avec la page **Performance du modèle** ou le test **CSV**.
+        """
+        section_title = "Comment tester la démonstration"
+    else:
+        render_page_header(
+            "Clinical dashboard",
+            "A demonstration interface for exploring and presenting diabetes risk estimation.",
+        )
+        cards = [
+            ("01", "Risk estimation", "Test one patient using eight clinical variables.", "Available"),
+            ("02", "Patient input", "Use a guided bilingual form.", "Available"),
+            ("03", "Performance", "Present the model results and curves.", "Presentation"),
+            ("04", "CSV testing", "Evaluate multiple rows in a structured file.", "Available"),
+        ]
+        steps = """
+        1. Open **Prediction** and enter the patient information.
+        2. Review **Result**, followed by **Recommendations**.
+        3. Finish with **Model Performance** or the **CSV** test.
+        """
+        section_title = "How to test the demonstration"
+
+    render_feature_cards(cards)
     st.markdown("")
-
-    col_img, col_text = st.columns([1, 2])
-
-    with col_img:
-        try:
-            logo = Image.open(LOGO_PATH)
-            st.image(logo, width=110)
-        except FileNotFoundError:
-            st.warning("Logo non chargé." if LANG == "Français" else "Logo not loaded.")
-
-    with col_text:
-        if LANG == "Français":
-            st.subheader("Bienvenue 👋")
-            st.markdown(
-                """
-                Cette application a été conçue pour **prédire le risque de diabète**
-                à partir de données médicales simples.
-
-                **Parcours recommandé pour la démonstration :**
-                1. 🎓 Lire la présentation du projet
-                2. 🤖 Saisir les données d'un patient et lancer une prédiction
-                3. 📈 Consulter le résultat et les recommandations
-                4. 🏥 Présenter les performances du modèle
-                """
-            )
-        else:
-            st.subheader("Welcome 👋")
-            st.markdown(
-                """
-                This application is designed to **predict the risk of diabetes**
-                from basic medical data.
-
-                **Suggested demo flow:**
-                1. 🎓 Read the project overview
-                2. 🤖 Enter patient data and run a prediction
-                3. 📈 Review the result and recommendations
-                4. 🏥 Present model performance
-                """
-            )
+    with st.container(border=True):
+        st.subheader(section_title)
+        st.markdown(steps)
+    st.markdown("")
+    render_dashboard_metrics(LANG)
 
 
 def show_prediction_form():
-    st.subheader("🧾 Formulaire de Prédiction" if LANG == "Français" else "🧾 Prediction Form")
-    st.markdown(
-        "Veuillez remplir les informations médicales ci-dessous :"
+    render_page_header(
+        "Formulaire de prédiction" if LANG == "Français" else "Prediction form",
+        "Renseignez les huit variables cliniques utilisées par le modèle."
         if LANG == "Français"
-        else "Please fill in the medical information below:"
+        else "Enter the eight clinical variables used by the model.",
     )
 
     threshold = st.slider(
-        "🔧 Seuil de décision (0 = très sensible, 1 = très précis)"
+        "Seuil de référence (affichage indicatif)"
         if LANG == "Français"
-        else "🔧 Decision threshold (0 = sensitive, 1 = precise)",
+        else "Reference threshold (display only)",
         min_value=0.1,
         max_value=0.9,
         value=0.5,
@@ -221,25 +233,26 @@ def show_prediction_form():
         "The slider is shown for reference only."
     )
 
-    st.markdown("---")
     with st.form("prediction_form"):
         col1, col2 = st.columns(2)
 
         with col1:
+            st.markdown("#### Profil patient" if LANG == "Français" else "#### Patient profile")
             pregnancies = st.number_input(field_label("pregnancies", LANG), 0, 20, 1)
+            age = st.number_input(field_label("age", LANG), 1, 120, 30)
+            dpf = st.number_input(field_label("dpf", LANG), 0.0, 2.5, 0.5, step=0.01)
+            bmi = st.number_input(field_label("bmi", LANG), 0.0, 70.0, 25.0, step=0.1)
+
+        with col2:
+            st.markdown("#### Mesures cliniques" if LANG == "Français" else "#### Clinical measurements")
             glucose = st.number_input(field_label("glucose", LANG), 0, 200, 100)
             blood_pressure = st.number_input(field_label("blood_pressure", LANG), 0, 150, 70)
             skin_thickness = st.number_input(field_label("skin_thickness", LANG), 0, 100, 20)
-
-        with col2:
             insulin = st.number_input(field_label("insulin", LANG), 0, 900, 80)
-            bmi = st.number_input(field_label("bmi", LANG), 0.0, 70.0, 25.0, step=0.1)
-            dpf = st.number_input(field_label("dpf", LANG), 0.0, 2.5, 0.5, step=0.01)
-            age = st.number_input(field_label("age", LANG), 1, 120, 30)
 
         submit_button = st.form_submit_button(
-            "🔍 Prédire" if LANG == "Français" else "🔍 Predict",
-            use_container_width=True,
+            "Estimer le risque" if LANG == "Français" else "Estimate risk",
+            width="stretch",
         )
 
     if submit_button:
@@ -259,12 +272,19 @@ def show_prediction_form():
         st.session_state["last_prediction"] = prediction
         st.session_state["last_proba"] = prob
         st.session_state["last_threshold"] = threshold
+        st.session_state["last_input_data"] = input_data
 
         st.success("✅ Prédiction effectuée !" if LANG == "Français" else "✅ Prediction completed!")
         render_result_card(LANG, prediction, prob)
 
 
 def show_prediction_result():
+    render_page_header(
+        "Dernier résultat" if LANG == "Français" else "Latest result",
+        "Retrouvez ici la dernière estimation effectuée pendant cette session."
+        if LANG == "Français"
+        else "Review the latest estimate made during this session.",
+    )
     if "last_prediction" not in st.session_state or "last_proba" not in st.session_state:
         st.warning(
             "⚠️ Aucune prédiction n'a encore été effectuée. Veuillez remplir le formulaire."
@@ -279,8 +299,29 @@ def show_prediction_result():
         st.session_state["last_proba"],
     )
 
+    input_data = st.session_state.get("last_input_data")
+    if input_data:
+        st.subheader("Valeurs du patient" if LANG == "Français" else "Patient values")
+        summary = [
+            (field_label("pregnancies", LANG), input_data["Pregnancies"]),
+            (field_label("glucose", LANG), input_data["Glucose"]),
+            (field_label("blood_pressure", LANG), input_data["BloodPressure"]),
+            (field_label("skin_thickness", LANG), input_data["SkinThickness"]),
+            (field_label("insulin", LANG), input_data["Insulin"]),
+            (field_label("bmi", LANG), input_data["BMI"]),
+            (field_label("dpf", LANG), input_data["DiabetesPedigreeFunction"]),
+            (field_label("age", LANG), input_data["Age"]),
+        ]
+        render_input_summary(summary)
+
 
 def show_recommendations():
+    render_page_header(
+        "Recommandations" if LANG == "Français" else "Recommendations",
+        "Conseils généraux associés au niveau de risque estimé."
+        if LANG == "Français"
+        else "General guidance associated with the estimated risk level.",
+    )
     if "last_prediction" not in st.session_state:
         st.warning(
             "⚠️ Veuillez d'abord effectuer une prédiction pour afficher les recommandations."
@@ -290,15 +331,13 @@ def show_recommendations():
         return
 
     prediction = st.session_state["last_prediction"]
-    st.subheader("💡 Recommandations" if LANG == "Français" else "💡 Recommendations")
-
     st.markdown('<div class="medical-card">', unsafe_allow_html=True)
     if prediction == 1:
         if LANG == "Français":
-            st.error("🩺 Le patient présente un risque élevé de diabète.")
+            st.error("Le modèle indique un risque estimé élevé pour les valeurs saisies.")
             st.markdown(
                 """
-                **Conseils pour la gestion du diabète :**
+                **Conseils généraux :**
                 - 🥗 Adoptez une alimentation équilibrée à faible indice glycémique
                 - 🏃‍♂️ Faites de l'exercice régulièrement (30 min/jour)
                 - 💧 Hydratez-vous correctement
@@ -308,10 +347,10 @@ def show_recommendations():
                 """
             )
         else:
-            st.error("🩺 The patient shows a high risk of diabetes.")
+            st.error("The model indicates a high estimated risk for the values entered.")
             st.markdown(
                 """
-                **Tips for managing diabetes:**
+                **General guidance:**
                 - 🥗 Follow a low-glycemic balanced diet
                 - 🏃‍♂️ Exercise regularly (30 min/day)
                 - 💧 Stay hydrated
@@ -322,7 +361,7 @@ def show_recommendations():
             )
     else:
         if LANG == "Français":
-            st.success("😊 Le patient semble en bonne santé.")
+            st.success("Le modèle indique un risque estimé faible pour les valeurs saisies.")
             st.markdown(
                 """
                 **Conseils pour conserver une bonne santé :**
@@ -334,7 +373,7 @@ def show_recommendations():
                 """
             )
         else:
-            st.success("😊 The patient appears to be healthy.")
+            st.success("The model indicates a low estimated risk for the values entered.")
             st.markdown(
                 """
                 **Tips to maintain good health:**
@@ -357,18 +396,28 @@ def show_data_viz():
 
     chart_palette = [PRIMARY, SECONDARY]
 
-    if LANG == "Français":
-        st.subheader("📊 Visualisation des Données")
-        st.markdown("Explorez le jeu de données utilisé pour entraîner le modèle.")
-    else:
-        st.subheader("📊 Data Visualisation")
-        st.markdown("Explore the dataset used to train the model.")
+    render_page_header(
+        "Exploration des données" if LANG == "Français" else "Data exploration",
+        "Explorez le jeu de données utilisé pour entraîner le modèle."
+        if LANG == "Français"
+        else "Explore the dataset used to train the model.",
+    )
 
     st.markdown("### 📌 Distribution de la variable cible (Outcome)")
     fig1, ax1 = plt.subplots(figsize=(8, 4))
-    sns.countplot(data=df, x="Outcome", ax=ax1, palette=chart_palette)
-    ax1.set_xticklabels(
-        ["Non diabétique", "Diabétique"] if LANG == "Français" else ["Non-diabetic", "Diabetic"]
+    sns.countplot(
+        data=df,
+        x="Outcome",
+        hue="Outcome",
+        ax=ax1,
+        palette=chart_palette,
+        legend=False,
+    )
+    ax1.set_xticks(
+        [0, 1],
+        ["Non diabétique", "Diabétique"]
+        if LANG == "Français"
+        else ["Non-diabetic", "Diabetic"],
     )
     ax1.set_title("Répartition des cas" if LANG == "Français" else "Case distribution")
     ax1.set_facecolor(BG)
@@ -399,9 +448,20 @@ def show_data_viz():
 
     st.markdown("### 🧪 Boxplot par classe")
     fig4, ax4 = plt.subplots(figsize=(8, 4))
-    sns.boxplot(x="Outcome", y=var, data=df, palette=chart_palette, ax=ax4)
-    ax4.set_xticklabels(
-        ["Non diabétique", "Diabétique"] if LANG == "Français" else ["Non-diabetic", "Diabetic"]
+    sns.boxplot(
+        x="Outcome",
+        y=var,
+        hue="Outcome",
+        data=df,
+        palette=chart_palette,
+        legend=False,
+        ax=ax4,
+    )
+    ax4.set_xticks(
+        [0, 1],
+        ["Non diabétique", "Diabétique"]
+        if LANG == "Français"
+        else ["Non-diabetic", "Diabetic"],
     )
     ax4.set_title(
         f"{var} selon l'état de santé" if LANG == "Français" else f"{var} by health status"
@@ -413,13 +473,11 @@ def show_data_viz():
 
 
 def show_model_performance():
-    st.subheader(
-        "🏥 Performance du modèle" if LANG == "Français" else "🏥 Model Performance"
-    )
-    st.markdown(
+    render_page_header(
+        "Performance du modèle" if LANG == "Français" else "Model performance",
         "Comparaison des performances du modèle **Gradient Boosting (GBDT)** avec d'autres algorithmes."
         if LANG == "Français"
-        else "Performance comparison of the **Gradient Boosting (GBDT)** model with other algorithms."
+        else "Performance comparison of the **Gradient Boosting (GBDT)** model with other algorithms.",
     )
 
     col1, col2 = st.columns(2)
@@ -431,14 +489,14 @@ def show_model_performance():
             else "#### 📊 Accuracy & AUC"
         )
         try:
-            st.image(str(PERF_CHART_PATH), use_container_width=True)
+            st.image(str(PERF_CHART_PATH), width="stretch")
         except Exception:
             st.warning("Image de performance introuvable." if LANG == "Français" else "Performance image not found.")
 
     with col2:
         st.markdown("#### 📈 Courbes ROC" if LANG == "Français" else "#### 📈 ROC Curves")
         try:
-            st.image(str(ROC_CHART_PATH), use_container_width=True)
+            st.image(str(ROC_CHART_PATH), width="stretch")
         except Exception:
             st.warning("Image ROC introuvable." if LANG == "Français" else "ROC image not found.")
 
@@ -465,7 +523,12 @@ def show_model_performance():
 
 
 def show_bulk_prediction():
-    st.subheader("📤 Prédiction en lot" if LANG == "Français" else "📤 Bulk Prediction via CSV")
+    render_page_header(
+        "Prédiction en lot" if LANG == "Français" else "Bulk prediction via CSV",
+        "Importez un fichier structuré avec les huit variables attendues."
+        if LANG == "Français"
+        else "Upload a structured file containing the eight expected variables.",
+    )
 
     uploaded_file = st.file_uploader(
         "📁 Importez un fichier CSV avec les données des patients"
@@ -518,7 +581,7 @@ def show_bulk_prediction():
         )
 
         st.success("✅ Prédictions générées !" if LANG == "Français" else "✅ Predictions generated!")
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width="stretch")
 
         csv = df.to_csv(index=False).encode("utf-8")
         st.download_button(
@@ -536,50 +599,44 @@ def show_bulk_prediction():
 
 
 def show_help():
-    st.subheader("🆘 Aide / Contact" if LANG == "Français" else "🆘 Help / Contact")
+    render_page_header(
+        "Aide et contact" if LANG == "Français" else "Help and contact",
+        "Repères rapides pour utiliser l'application pendant la démonstration."
+        if LANG == "Français"
+        else "Quick guidance for using the application during the demonstration.",
+    )
 
-    st.markdown('<div class="medical-card">', unsafe_allow_html=True)
     if LANG == "Français":
-        st.markdown(
-            """
-            ### ℹ️ À propos de l'application
-            Cette application utilise un modèle de Machine Learning (Gradient Boosting) pour prédire le **risque de diabète** à partir de données médicales simples.
-
-            Elle n'a **pas vocation à remplacer un avis médical** et doit être utilisée à titre indicatif.
-
-            ### 📧 Contact
-            - Développeur : **Darryl MOMO**
-            - Email : darrylmomo237@gmail.com
-            - LinkedIn : [Voir le profil](https://www.linkedin.com/in/darryl-momo)
-            - GitHub : [Accéder au dépôt](https://github.com/Darryl237/Diabetes-Prediction-App)
-
-            ### 📝 Conseils d'utilisation
-            - Utilisez des valeurs réalistes dans le formulaire
-            - Exportez vos résultats pour en discuter avec un professionnel
-            - Ne pas utiliser sur des données sensibles sans chiffrement
-            """
-        )
+        about = "Le modèle Gradient Boosting estime un risque à partir de huit variables. Son résultat reste indicatif."
+        tips = [
+            "Utilisez des valeurs réalistes dans le formulaire.",
+            "Consultez Résultat après chaque nouvelle estimation.",
+            "N'importez pas de données patients sensibles pendant la démonstration.",
+        ]
     else:
-        st.markdown(
-            """
-            ### ℹ️ About this App
-            This application uses a Gradient Boosting Machine Learning model to predict the **risk of diabetes** from simple medical data.
+        about = "The Gradient Boosting model estimates risk from eight variables. Its result remains informational."
+        tips = [
+            "Use realistic values in the form.",
+            "Open Result after each new estimate.",
+            "Do not upload sensitive patient data during the demonstration.",
+        ]
 
-            It is **not intended to replace medical advice** and should be used for informational purposes only.
-
-            ### 📧 Contact
-            - Developer: **Darryl MOMO**
-            - Email: darrylmomo237@gmail.com
-            - LinkedIn: [View profile](https://www.linkedin.com/in/darryl-momo)
-            - GitHub: [Access repository](https://github.com/Darryl237/Diabetes-Prediction-App)
-
-            ### 📝 Usage Tips
-            - Use realistic values in the prediction form
-            - Export results to discuss with your doctor
-            - Do not use on sensitive data without encryption
-            """
-        )
-    st.markdown("</div>", unsafe_allow_html=True)
+    left, right = st.columns(2)
+    with left:
+        with st.container(border=True):
+            st.markdown("#### Application")
+            st.write(about)
+            for tip in tips:
+                st.markdown(f"- {tip}")
+    with right:
+        with st.container(border=True):
+            st.markdown("#### Contact")
+            st.markdown(
+                "**Darryl MOMO**  \n"
+                "darrylmomo237@gmail.com  \n"
+                "[LinkedIn](https://www.linkedin.com/in/darryl-momo) · "
+                "[GitHub](https://github.com/Darryl237/Diabetes-Prediction-App)"
+            )
 
 
 # -------------------------
@@ -588,14 +645,16 @@ def show_help():
 PAGE_HANDLERS = {
     0: show_home,
     1: lambda: show_about_project(LANG),
-    2: lambda: show_researcher_info(LANG),
-    3: show_prediction_form,
-    4: show_prediction_result,
-    5: show_recommendations,
-    6: show_data_viz,
-    7: show_model_performance,
-    8: show_bulk_prediction,
-    9: show_help,
+    2: lambda: show_how_it_works(LANG),
+    3: lambda: show_demo_guide(LANG),
+    4: lambda: show_researcher_info(LANG),
+    5: show_prediction_form,
+    6: show_prediction_result,
+    7: show_recommendations,
+    8: show_data_viz,
+    9: show_model_performance,
+    10: show_bulk_prediction,
+    11: show_help,
 }
 
 page_index = menu_options[LANG].index(page)

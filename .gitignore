@@ -5,6 +5,7 @@ __pycache__/
 
 # Fichier sensible
 .env
+.streamlit/secrets.toml
 
 # Jupyter et fichiers de travail
 *.ipynb

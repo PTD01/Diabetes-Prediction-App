@@ -1,129 +1,204 @@
-"""Presentation-only pages for thesis/demo (static content, no backend logic)."""
+"""Static pages used during the thesis presentation."""
 
 import streamlit as st
 
+from ui.components import render_page_header
+
 
 def show_about_project(lang: str) -> None:
-    st.subheader("🎓 À propos du projet" if lang == "Français" else "🎓 About the Project")
-
-    st.markdown('<div class="medical-card">', unsafe_allow_html=True)
     if lang == "Français":
-        st.markdown(
-            """
-            ### Objectif
-            Cette application est une **aide à la décision clinique** qui estime le risque de diabète
-            à partir de huit mesures médicales courantes (glycémie, IMC, âge, etc.).
-
-            ### Problématique
-            Le diabète de type 2 est une pathologie fréquente. Un outil simple permettant d'évaluer
-            rapidement un risque peut soutenir le travail du clinicien lors d'un dépistage précoce.
-
-            ### Approche technique
-            - **Dataset :** Pima Indians Diabetes (768 enregistrements)
-            - **Prétraitement :** StandardScaler
-            - **Modèle retenu :** Gradient Boosting (GBDT)
-            - **Interface :** Application web Streamlit bilingue (FR / EN)
-
-            ### Limites
-            L'outil est **indicatif** et ne remplace pas un diagnostic médical. Il sert à la
-            démonstration académique et à l'exploration de données cliniques.
-            """
+        render_page_header(
+            "À propos du projet",
+            "Une plateforme académique d'estimation du risque de diabète destinée à la démonstration.",
         )
+        overview = {
+            "Problématique": "Le dépistage précoce du diabète repose sur plusieurs indicateurs cliniques qui peuvent être difficiles à interpréter rapidement.",
+            "Objectif": "Présenter une estimation du risque à partir de huit variables médicales courantes.",
+            "Intérêt": "Illustrer comment le machine learning peut soutenir l'analyse de données de santé dans un cadre académique.",
+            "Usage": "Tester un patient, consulter le résultat, explorer les données et présenter les performances du modèle.",
+        }
+        limits = "Cette application soutient une soutenance et une démonstration. Elle ne fournit pas de diagnostic clinique."
+        examples_title = "Cas de démonstration"
+        example_columns = ["Scénario", "Glycémie", "IMC", "Âge", "Lecture attendue"]
+        example_rows = [
+            ["Risque élevé", 180, 33, 50, "Risque probablement élevé"],
+            ["Risque faible", 85, 22, 25, "Risque probablement faible"],
+        ]
     else:
-        st.markdown(
-            """
-            ### Objective
-            This application is a **clinical decision-support tool** that estimates diabetes risk
-            from eight common medical measurements (glucose, BMI, age, etc.).
-
-            ### Problem
-            Type 2 diabetes is widespread. A simple risk assessment tool can support clinicians
-            during early screening.
-
-            ### Technical approach
-            - **Dataset:** Pima Indians Diabetes (768 records)
-            - **Preprocessing:** StandardScaler
-            - **Selected model:** Gradient Boosting (GBDT)
-            - **Interface:** Bilingual Streamlit web app (FR / EN)
-
-            ### Limitations
-            The tool is **informational only** and does not replace medical diagnosis. It is
-            intended for academic demonstration and clinical data exploration.
-            """
+        render_page_header(
+            "About the project",
+            "An academic diabetes risk estimation platform designed for demonstration.",
         )
-    st.markdown("</div>", unsafe_allow_html=True)
+        overview = {
+            "Problem": "Early diabetes screening relies on several clinical indicators that can be difficult to interpret quickly.",
+            "Objective": "Present a risk estimate based on eight common medical variables.",
+            "Value": "Illustrate how machine learning can support health data analysis in an academic setting.",
+            "Use": "Test one patient, review the result, explore data and present model performance.",
+        }
+        limits = "This application supports a thesis presentation and demonstration. It does not provide a clinical diagnosis."
+        examples_title = "Demonstration cases"
+        example_columns = ["Scenario", "Glucose", "BMI", "Age", "Expected reading"]
+        example_rows = [
+            ["High risk", 180, 33, 50, "Probably higher risk"],
+            ["Low risk", 85, 22, 25, "Probably lower risk"],
+        ]
 
-    st.markdown('<div class="medical-card">', unsafe_allow_html=True)
-    st.markdown("### 🧪 Exemples pour la démonstration" if lang == "Français" else "### 🧪 Demo examples")
-    if lang == "Français":
-        st.markdown(
-            """
-            | Scénario | Glycémie | IMC | Âge | Résultat attendu |
-            |----------|----------|-----|-----|------------------|
-            | Risque élevé | 180 | 33 | 50 | Probablement diabétique |
-            | Risque faible | 85 | 22 | 25 | Probablement non diabétique |
+    cols = st.columns(2)
+    for col, (title, text) in zip(cols * 2, overview.items()):
+        with col:
+            with st.container(border=True):
+                st.markdown(f"#### {title}")
+                st.write(text)
 
-            Utilisez la page **Prédiction** pour tester ces valeurs (autres champs : valeurs par défaut).
-            """
-        )
-    else:
-        st.markdown(
-            """
-            | Scenario | Glucose | BMI | Age | Expected outcome |
-            |----------|---------|-----|-----|------------------|
-            | High risk | 180 | 33 | 50 | Likely diabetic |
-            | Low risk | 85 | 22 | 25 | Likely non-diabetic |
-
-            Use the **Prediction** page to test these values (other fields: default values).
-            """
-        )
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.info(limits)
+    st.subheader(examples_title)
+    st.dataframe(
+        {column: [row[index] for row in example_rows] for index, column in enumerate(example_columns)},
+        width="stretch",
+        hide_index=True,
+    )
 
 
 def show_researcher_info(lang: str) -> None:
-    st.subheader("👨‍⚕️ Équipe de recherche" if lang == "Français" else "👨‍⚕️ Research Team")
-
-    st.markdown('<div class="medical-card">', unsafe_allow_html=True)
     if lang == "Français":
-        st.markdown(
-            """
-            ### Projet académique
-            **Titre :** Conception et implémentation d'une plateforme de prédiction du risque de diabète
-
-            **Domaine :** Santé numérique · Machine Learning · Aide à la décision clinique
-
-            ### Équipe
-            | Rôle | Nom |
-            |------|-----|
-            | Développeur / Chercheur | **Darryl MOMO** |
-            | Encadrant / Médecin référent | *[À compléter pour la soutenance]* |
-            | Institution | *[Hôpital / Université — à compléter]* |
-
-            ### Contact
-            - Email : darrylmomo237@gmail.com
-            - LinkedIn : [Profil](https://www.linkedin.com/in/darryl-momo)
-            - GitHub : [Dépôt du projet](https://github.com/Darryl237/Diabetes-Prediction-App)
-            """
+        render_page_header(
+            "Informations de recherche",
+            "Informations éditables à compléter avant la soutenance.",
         )
+        labels = {
+            "Étudiant / Chercheur": "Darryl MOMO",
+            "Encadrant": "[À compléter]",
+            "Institution": "[Hôpital / Université à compléter]",
+            "Département": "[À compléter]",
+        }
+        thesis_title = "Conception et implémentation d'une plateforme de prédiction du risque de diabète"
+        field = "Santé numérique · Machine Learning · Aide à la décision clinique"
+        contact_title = "Contact du projet"
     else:
-        st.markdown(
-            """
-            ### Academic project
-            **Title:** Design and implementation of a diabetes risk prediction platform
-
-            **Field:** Digital health · Machine Learning · Clinical decision support
-
-            ### Team
-            | Role | Name |
-            |------|------|
-            | Developer / Researcher | **Darryl MOMO** |
-            | Supervisor / Referring physician | *[To complete for defense]* |
-            | Institution | *[Hospital / University — to complete]* |
-
-            ### Contact
-            - Email: darrylmomo237@gmail.com
-            - LinkedIn: [Profile](https://www.linkedin.com/in/darryl-momo)
-            - GitHub: [Project repository](https://github.com/Darryl237/Diabetes-Prediction-App)
-            """
+        render_page_header(
+            "Research information",
+            "Editable information to complete before the thesis defense.",
         )
-    st.markdown("</div>", unsafe_allow_html=True)
+        labels = {
+            "Student / Researcher": "Darryl MOMO",
+            "Supervisor": "[To complete]",
+            "Institution": "[Hospital / University to complete]",
+            "Department": "[To complete]",
+        }
+        thesis_title = "Design and implementation of a diabetes risk prediction platform"
+        field = "Digital health · Machine Learning · Clinical decision support"
+        contact_title = "Project contact"
+
+    with st.container(border=True):
+        st.markdown(f"### {thesis_title}")
+        st.caption(field)
+        for label, value in labels.items():
+            st.markdown(f"**{label}:** {value}")
+
+    with st.expander(contact_title):
+        st.markdown(
+            "Email: darrylmomo237@gmail.com  \n"
+            "LinkedIn: [Darryl Momo](https://www.linkedin.com/in/darryl-momo)  \n"
+            "GitHub: [Diabetes Prediction App](https://github.com/Darryl237/Diabetes-Prediction-App)"
+        )
+
+
+def show_how_it_works(lang: str) -> None:
+    if lang == "Français":
+        render_page_header(
+            "Fonctionnement du système",
+            "Le parcours existant, de la saisie patient à l'affichage du résultat.",
+        )
+        steps = [
+            ("1", "Saisie", "Huit variables cliniques sont renseignées dans le formulaire."),
+            ("2", "Prétraitement", "Le scaler existant normalise les valeurs saisies."),
+            ("3", "Inférence", "Le modèle Gradient Boosting calcule la classe et la probabilité."),
+            ("4", "Présentation", "L'interface affiche le risque estimé et les recommandations."),
+        ]
+        note = "Le flux backend, les artefacts du modèle et les règles de prédiction restent inchangés."
+    else:
+        render_page_header(
+            "How the system works",
+            "The existing journey from patient input to result display.",
+        )
+        steps = [
+            ("1", "Input", "Eight clinical variables are entered in the form."),
+            ("2", "Preprocessing", "The existing scaler normalizes the entered values."),
+            ("3", "Inference", "The Gradient Boosting model calculates the class and probability."),
+            ("4", "Presentation", "The interface displays the estimated risk and recommendations."),
+        ]
+        note = "The backend flow, model artifacts and prediction rules remain unchanged."
+
+    cols = st.columns(4)
+    for col, (number, title, text) in zip(cols, steps):
+        with col:
+            with st.container(border=True):
+                st.caption(f"ÉTAPE {number}" if lang == "Français" else f"STEP {number}")
+                st.markdown(f"#### {title}")
+                st.write(text)
+    st.info(note)
+
+
+def show_demo_guide(lang: str) -> None:
+    if lang == "Français":
+        render_page_header(
+            "Guide de démonstration",
+            "Un parcours court pour présenter l'application en cinq à sept minutes.",
+        )
+        sections = [
+            ("1. Connexion", "Connectez-vous avec le compte de démonstration, puis présentez l'accueil."),
+            ("2. Ouvrir Prédiction", "Accédez au formulaire principal depuis la barre latérale."),
+            ("3. Saisir les valeurs", "Utilisez un cas ci-contre et conservez les autres valeurs par défaut."),
+            ("4. Lancer l'estimation", "Cliquez sur Estimer le risque pour interroger le modèle existant."),
+            ("5. Examiner le résultat", "Montrez la probabilité, le niveau de risque et les recommandations."),
+            ("6. Présenter les données", "Ouvrez Explorations et Performance ; le test CSV est également disponible."),
+        ]
+        credentials = "**Utilisateur :** `admin`  \n**Mot de passe :** `daikii123`"
+        talking_points = "Expliquez l'objectif académique, les huit variables, le flux de prédiction et les limites médicales."
+        access_title = "Accès démo"
+        talking_title = "Points à présenter"
+        samples_title = "Cas d'essai"
+        samples = [
+            ("Risque élevé", "Glycémie 180 · IMC 33 · Âge 50"),
+            ("Risque faible", "Glycémie 85 · IMC 22 · Âge 25"),
+        ]
+    else:
+        render_page_header(
+            "Demo guide",
+            "A short journey for presenting the application in five to seven minutes.",
+        )
+        sections = [
+            ("1. Login", "Sign in with the demo account, then introduce the dashboard."),
+            ("2. Open Prediction", "Access the main form from the sidebar."),
+            ("3. Enter values", "Use one of the sample cases and keep the other default values."),
+            ("4. Run the estimate", "Select Estimate risk to query the existing model."),
+            ("5. Review the result", "Show the probability, risk level and recommendations."),
+            ("6. Present the data", "Open Data Visualisation and Model Performance; CSV testing is also available."),
+        ]
+        credentials = "**Username:** `admin`  \n**Password:** `daikii123`"
+        talking_points = "Explain the academic objective, eight variables, prediction flow and medical limitations."
+        access_title = "Demo access"
+        talking_title = "Talking points"
+        samples_title = "Sample cases"
+        samples = [
+            ("High risk", "Glucose 180 · BMI 33 · Age 50"),
+            ("Low risk", "Glucose 85 · BMI 22 · Age 25"),
+        ]
+
+    left, right = st.columns([2, 1])
+    with left:
+        for title, text in sections:
+            with st.container(border=True):
+                st.markdown(f"#### {title}")
+                st.write(text)
+    with right:
+        with st.container(border=True):
+            st.markdown(f"#### {access_title}")
+            st.markdown(credentials)
+        with st.container(border=True):
+            st.markdown(f"#### {talking_title}")
+            st.write(talking_points)
+        with st.container(border=True):
+            st.markdown(f"#### {samples_title}")
+            for label, values in samples:
+                st.markdown(f"**{label}**  \n{values}")
