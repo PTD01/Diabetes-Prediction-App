@@ -62,8 +62,8 @@ def render_dashboard_metrics(lang: str) -> None:
         )
 
 
-def render_result_card(lang: str, prediction: int, probability: float) -> None:
-    high_risk = prediction == 1
+def render_result_card(lang: str, probability: float, threshold: float = 0.5) -> None:
+    high_risk = probability >= threshold
     if lang == "Français":
         risk_label = "Risque estimé élevé" if high_risk else "Risque estimé faible"
         explanation = (

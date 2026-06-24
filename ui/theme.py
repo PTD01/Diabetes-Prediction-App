@@ -52,9 +52,9 @@ def inject_medical_styles() -> None:
                 backdrop-filter: blur(10px);
             }}
             .block-container {{
-                padding-top: 2rem;
-                padding-bottom: 2.5rem;
-                max-width: 1150px;
+                padding-top: 1.25rem;
+                padding-bottom: 2.25rem;
+                max-width: 1120px;
             }}
             [data-testid="stSidebar"] {{
                 background-color: {SIDEBAR_BG};
@@ -99,10 +99,10 @@ def inject_medical_styles() -> None:
                 background-color: {CARD_BG};
                 border: 1px solid {BORDER};
                 border-top: 3px solid {PRIMARY};
-                border-radius: 14px;
-                padding: 1.5rem 1.75rem;
-                margin-bottom: 1.25rem;
-                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+                border-radius: 12px;
+                padding: 1.35rem 1.5rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
             }}
             .medical-card:empty {{
                 display: none;
@@ -128,65 +128,70 @@ def inject_medical_styles() -> None:
                 max-width: 760px;
             }}
             .feature-card {{
-                min-height: 175px;
-                padding: 1.25rem;
+                display: flex;
+                flex-direction: column;
+                min-height: 148px;
+                height: 100%;
+                padding: 1.1rem 1.15rem;
                 background-color: {CARD_BG};
                 border: 1px solid {BORDER};
-                border-radius: 12px;
-                box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
             }}
             .feature-number {{
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                width: 30px;
-                height: 30px;
-                border-radius: 8px;
+                width: 26px;
+                height: 26px;
+                border-radius: 7px;
                 background-color: {ACCENT_BG};
                 color: {PRIMARY};
                 font-weight: 700;
+                font-size: 0.82rem;
             }}
             .feature-card h3 {{
-                margin: 0.8rem 0 0.4rem;
+                margin: 0.7rem 0 0.35rem;
                 color: {TEXT};
-                font-size: 1.05rem;
+                font-size: 1rem;
             }}
             .feature-card p {{
-                margin: 0 0 1rem;
+                margin: 0 0 0.85rem;
                 color: {MUTED};
-                font-size: 0.9rem;
-                line-height: 1.5;
+                font-size: 0.88rem;
+                line-height: 1.45;
             }}
             .status-label {{
                 display: inline-block;
-                padding: 0.2rem 0.55rem;
+                align-self: flex-start;
+                margin-top: auto;
+                padding: 0.18rem 0.5rem;
                 border-radius: 999px;
                 background-color: #ECFDF5;
                 color: #047857;
-                font-size: 0.75rem;
-                font-weight: 650;
+                font-size: 0.72rem;
+                font-weight: 600;
             }}
             .medical-metric {{
                 background-color: {CARD_BG};
-                border-radius: 12px;
-                padding: 1.1rem;
+                border-radius: 10px;
+                padding: 1rem;
                 text-align: center;
-                border: 1px solid #CDE7F6;
-                box-shadow: 0 5px 16px rgba(37, 99, 235, 0.06);
-                transition: transform 160ms ease, box-shadow 160ms ease;
+                border: 1px solid {BORDER};
+                box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
             }}
             .result-card {{
                 display: grid;
                 grid-template-columns: minmax(160px, 0.7fr) 2fr;
                 gap: 1.5rem;
                 align-items: center;
-                margin-top: 1.25rem;
-                padding: 1.5rem;
+                margin-top: 1.1rem;
+                padding: 1.35rem 1.5rem;
                 background-color: {CARD_BG};
                 border: 1px solid {BORDER};
                 border-left: 5px solid {SECONDARY};
                 border-radius: 12px;
-                box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+                box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
             }}
             .result-card.risk-high {{
                 border-left-color: {DANGER};
@@ -216,12 +221,8 @@ def inject_medical_styles() -> None:
             .result-summary small {{
                 color: {MUTED};
             }}
-            .medical-metric:hover {{
-                transform: translateY(-2px);
-                box-shadow: 0 10px 24px rgba(37, 99, 235, 0.10);
-            }}
             .medical-metric .value {{
-                font-size: 2rem;
+                font-size: 1.8rem;
                 font-weight: 700;
                 color: {PRIMARY};
             }}
@@ -238,9 +239,9 @@ def inject_medical_styles() -> None:
             div[data-testid="stForm"] {{
                 background-color: {CARD_BG};
                 border: 1px solid {BORDER};
-                border-radius: 14px;
+                border-radius: 12px;
                 padding: 1.5rem;
-                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+                box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
             }}
             [data-testid="stNumberInput"] input,
             [data-testid="stTextInput"] input,
@@ -260,17 +261,14 @@ def inject_medical_styles() -> None:
                 border: none;
                 border-radius: 8px;
                 font-weight: 600;
-                padding: 0.6rem 1rem;
-                box-shadow: 0 5px 14px rgba(37, 99, 235, 0.22);
-                transition: transform 150ms ease, box-shadow 150ms ease;
+                padding: 0.55rem 1rem;
+                transition: background-color 150ms ease;
             }}
             .stButton > button:hover,
             .stDownloadButton > button:hover,
             [data-testid="stFormSubmitButton"] > button:hover {{
                 background-color: #1D4ED8;
                 color: white;
-                transform: translateY(-1px);
-                box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
             }}
             [data-testid="stAlert"] {{
                 border-radius: 10px;
@@ -302,6 +300,69 @@ def inject_medical_styles() -> None:
                 margin-top: 0.65rem;
                 border-radius: 999px;
                 background-color: {PRIMARY};
+            }}
+            .st-key-login_card {{
+                max-width: 760px;
+                margin: 8vh auto 0;
+                background-color: {CARD_BG};
+                border: 1px solid {BORDER};
+                border-top: 3px solid {PRIMARY};
+                border-radius: 14px;
+                padding: 1.85rem 2rem 1.6rem;
+                box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+            }}
+            .st-key-login_card [data-testid="stImage"] {{
+                display: flex;
+                justify-content: flex-start;
+            }}
+            .st-key-login_card [data-testid="stImage"] img {{
+                background-color: {CARD_BG};
+                border: 1px solid {BORDER};
+                border-radius: 14px;
+                padding: 8px;
+            }}
+            .st-key-login_card [data-testid="stColumn"]:last-child {{
+                border-left: 1px solid {BORDER};
+                padding-left: 1.75rem;
+            }}
+            .st-key-login_card [data-testid="column"]:last-child {{
+                border-left: 1px solid {BORDER};
+                padding-left: 1.75rem;
+            }}
+            .login-title {{
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: {TEXT};
+                margin-top: 0.7rem;
+            }}
+            .login-subtitle {{
+                font-size: 0.9rem;
+                color: {MUTED};
+                margin: 0.2rem 0 0;
+            }}
+            .st-key-login_card label {{
+                font-weight: 500;
+                font-size: 0.88rem;
+                color: {TEXT};
+            }}
+            .st-key-login_card input {{
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }}
+            .st-key-login_card [data-testid="stButton"] {{
+                margin-top: 0.4rem;
+            }}
+            .st-key-login_card [data-testid="stButton"] button {{
+                padding: 0.65rem 1rem;
+                font-size: 0.97rem;
+            }}
+            .login-disclaimer {{
+                text-align: center;
+                font-size: 0.78rem;
+                color: {MUTED};
+                margin-top: 1.1rem;
+                padding-top: 0.9rem;
+                border-top: 1px solid {BORDER};
             }}
             @media (max-width: 768px) {{
                 .block-container {{
@@ -336,12 +397,12 @@ def inject_medical_styles() -> None:
 def render_disclaimer(lang: str) -> None:
     if lang == "Français":
         text = (
-            "⚕️ <strong>Avis médical :</strong> cet outil est une aide à la décision à titre indicatif "
+            "<strong>Avis médical :</strong> cet outil est une aide à la décision à titre indicatif "
             "et ne remplace pas un diagnostic médical professionnel."
         )
     else:
         text = (
-            "⚕️ <strong>Medical notice:</strong> this tool provides decision support for informational "
+            "<strong>Medical notice:</strong> this tool provides decision support for informational "
             "purposes only and does not replace professional medical diagnosis."
         )
     st.markdown(f'<div class="medical-disclaimer">{text}</div>', unsafe_allow_html=True)
@@ -350,6 +411,6 @@ def render_disclaimer(lang: str) -> None:
 def render_sidebar_logo(logo_path, lang: str) -> None:
     try:
         logo = Image.open(logo_path)
-        st.sidebar.image(logo, width=110)
+        st.sidebar.image(logo, width=90)
     except FileNotFoundError:
         st.sidebar.warning("Logo introuvable." if lang == "Français" else "Logo not found.")

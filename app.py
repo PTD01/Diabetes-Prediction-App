@@ -53,13 +53,13 @@ PASSWORD = st.secrets["APP_PASSWORD"]
 # LANGUE (sélecteur + dictionnaire)
 # -------------------------
 lang_options = ["Français", "English"]
-selected_lang = st.sidebar.selectbox("🌐 Language / Langue", lang_options)
+selected_lang = st.sidebar.selectbox("Language / Langue", lang_options)
 LANG = selected_lang
 
 translations = {
     "login_title": {
-        "Français": "🔐 Authentification requise",
-        "English": "🔐 Login Required",
+        "Français": "Authentification requise",
+        "English": "Login Required",
     },
     "username_label": {
         "Français": "Nom d'utilisateur",
@@ -74,8 +74,8 @@ translations = {
         "English": "Log in",
     },
     "login_failed": {
-        "Français": "❌ Identifiants incorrects.",
-        "English": "❌ Incorrect credentials.",
+        "Français": "Identifiants incorrects.",
+        "English": "Incorrect credentials.",
     },
 }
 
@@ -83,21 +83,55 @@ translations = {
 # AUTHENTIFICATION
 # -------------------------
 def authenticate():
-    render_page_header(
-        translations["login_title"][LANG],
-        "Accès sécurisé à la démonstration clinique."
+    title = (
+        "Système de prédiction du diabète"
         if LANG == "Français"
-        else "Secure access to the clinical demonstration.",
+        else "Diabetes Prediction System"
     )
-    username_input = st.text_input(translations["username_label"][LANG])
-    password_input = st.text_input(translations["password_label"][LANG], type="password")
+    subtitle = (
+        "Plateforme de démonstration (thèse de médecine)"
+        if LANG == "Français"
+        else "Medical thesis demo platform"
+    )
+    disclaimer = (
+        "Démonstration académique uniquement."
+        if LANG == "Français"
+        else "For academic demonstration only."
+    )
 
-    if st.button(translations["login_button"][LANG], width="stretch"):
-        if username_input == USERNAME and password_input == PASSWORD:
-            st.session_state["authenticated"] = True
-            st.rerun()
-        else:
-            st.error(translations["login_failed"][LANG])
+    with st.container(border=False, key="login_card"):
+        brand, form = st.columns([1, 1.1], gap="large")
+
+        with brand:
+            try:
+                st.image(str(LOGO_PATH), width=80)
+            except Exception:
+                pass
+            st.markdown(f'<div class="login-title">{title}</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="login-subtitle">{subtitle}</div>', unsafe_allow_html=True
+            )
+
+        with form:
+            username_input = st.text_input(
+                translations["username_label"][LANG], placeholder="admin"
+            )
+            password_input = st.text_input(
+                translations["password_label"][LANG],
+                type="password",
+                placeholder="••••••••",
+            )
+
+            if st.button(translations["login_button"][LANG], width="stretch"):
+                if username_input == USERNAME and password_input == PASSWORD:
+                    st.session_state["authenticated"] = True
+                    st.rerun()
+                else:
+                    st.error(translations["login_failed"][LANG])
+
+        st.markdown(
+            f'<div class="login-disclaimer">{disclaimer}</div>', unsafe_allow_html=True
+        )
 
 
 if "authenticated" not in st.session_state:
@@ -111,9 +145,9 @@ if not st.session_state["authenticated"]:
 # TITRE / BANNIÈRE D'ACCUEIL
 # -------------------------
 if LANG == "Français":
-    st.title("🩺 Application de Prédiction du Diabète")
+    st.title("Application de Prédiction du Diabète")
 else:
-    st.title("🩺 Diabetes Prediction Application")
+    st.title("Diabetes Prediction Application")
 
 render_disclaimer(LANG)
 
@@ -122,36 +156,36 @@ render_disclaimer(LANG)
 # -------------------------
 menu_options = {
     "Français": [
-        "🏠 Accueil",
-        "🎓 À propos du projet",
-        "⚙️ Fonctionnement",
-        "📋 Guide démo",
-        "👨‍⚕️ Équipe de recherche",
-        "🤖 Prédiction",
-        "📈 Résultat",
-        "💡 Recommandations",
-        "📊 Explorations",
-        "🏥 Performance du modèle",
-        "📤 Prédictions par CSV",
-        "🆘 Aide / Contact",
+        "Accueil",
+        "À propos du projet",
+        "Fonctionnement",
+        "Guide démo",
+        "Équipe de recherche",
+        "Prédiction",
+        "Résultat",
+        "Recommandations",
+        "Explorations",
+        "Performance du modèle",
+        "Prédictions par CSV",
+        "Aide / Contact",
     ],
     "English": [
-        "🏠 Home",
-        "🎓 About the Project",
-        "⚙️ How It Works",
-        "📋 Demo Guide",
-        "👨‍⚕️ Research Team",
-        "🤖 Prediction",
-        "📈 Result",
-        "💡 Recommendations",
-        "📊 Data Visualisation",
-        "🏥 Model Performance",
-        "📤 Bulk Predictions (CSV)",
-        "🆘 Help / Contact",
+        "Home",
+        "About the Project",
+        "How It Works",
+        "Demo Guide",
+        "Research Team",
+        "Prediction",
+        "Result",
+        "Recommendations",
+        "Data Visualisation",
+        "Model Performance",
+        "Bulk Predictions (CSV)",
+        "Help / Contact",
     ],
 }
 
-st.sidebar.title("🧭 Navigation")
+st.sidebar.title("Navigation")
 render_sidebar_logo(LOGO_PATH, LANG)
 
 page = st.sidebar.radio(
@@ -217,20 +251,20 @@ def show_prediction_form():
     )
 
     threshold = st.slider(
-        "Seuil de référence (affichage indicatif)"
+        "Seuil de classification du risque"
         if LANG == "Français"
-        else "Reference threshold (display only)",
+        else "Risk classification threshold",
         min_value=0.1,
         max_value=0.9,
         value=0.5,
         step=0.01,
     )
     st.caption(
-        "ℹ️ La classification finale utilise la logique de décision par défaut du modèle entraîné. "
-        "Le curseur est affiché à titre indicatif."
+        "La probabilité provient du modèle entraîné. Le seuil détermine uniquement "
+        "le niveau de risque affiché (probabilité ≥ seuil → risque élevé)."
         if LANG == "Français"
-        else "ℹ️ The final classification uses the trained model's default decision logic. "
-        "The slider is shown for reference only."
+        else "The probability comes from the trained model. The threshold only sets the "
+        "displayed risk level (probability ≥ threshold → high risk)."
     )
 
     with st.form("prediction_form"):
@@ -274,8 +308,8 @@ def show_prediction_form():
         st.session_state["last_threshold"] = threshold
         st.session_state["last_input_data"] = input_data
 
-        st.success("✅ Prédiction effectuée !" if LANG == "Français" else "✅ Prediction completed!")
-        render_result_card(LANG, prediction, prob)
+        st.success("Prédiction effectuée." if LANG == "Français" else "Prediction completed.")
+        render_result_card(LANG, prob, threshold)
 
 
 def show_prediction_result():
@@ -287,16 +321,16 @@ def show_prediction_result():
     )
     if "last_prediction" not in st.session_state or "last_proba" not in st.session_state:
         st.warning(
-            "⚠️ Aucune prédiction n'a encore été effectuée. Veuillez remplir le formulaire."
+            "Aucune prédiction n'a encore été effectuée. Veuillez remplir le formulaire."
             if LANG == "Français"
-            else "⚠️ No prediction made yet. Please fill out the form."
+            else "No prediction made yet. Please fill out the form."
         )
         return
 
     render_result_card(
         LANG,
-        st.session_state["last_prediction"],
         st.session_state["last_proba"],
+        st.session_state.get("last_threshold", 0.5),
     )
 
     input_data = st.session_state.get("last_input_data")
@@ -322,76 +356,79 @@ def show_recommendations():
         if LANG == "Français"
         else "General guidance associated with the estimated risk level.",
     )
-    if "last_prediction" not in st.session_state:
+    if "last_proba" not in st.session_state:
         st.warning(
-            "⚠️ Veuillez d'abord effectuer une prédiction pour afficher les recommandations."
+            "Veuillez d'abord effectuer une prédiction pour afficher les recommandations."
             if LANG == "Français"
-            else "⚠️ Please make a prediction first to display recommendations."
+            else "Please make a prediction first to display recommendations."
         )
         return
 
-    prediction = st.session_state["last_prediction"]
-    st.markdown('<div class="medical-card">', unsafe_allow_html=True)
-    if prediction == 1:
-        if LANG == "Français":
-            st.error("Le modèle indique un risque estimé élevé pour les valeurs saisies.")
-            st.markdown(
-                """
-                **Conseils généraux :**
-                - 🥗 Adoptez une alimentation équilibrée à faible indice glycémique
-                - 🏃‍♂️ Faites de l'exercice régulièrement (30 min/jour)
-                - 💧 Hydratez-vous correctement
-                - 🚫 Réduisez les sucres rapides et les aliments transformés
-                - 📅 Effectuez des contrôles réguliers chez un professionnel
-                - 💊 Respectez les traitements médicaux si prescrits
-                """
-            )
+    high_risk = st.session_state["last_proba"] >= st.session_state.get("last_threshold", 0.5)
+    with st.container(border=True):
+        if high_risk:
+            if LANG == "Français":
+                st.error("Le modèle indique un risque estimé élevé pour les valeurs saisies.")
+                st.markdown(
+                    """
+                    **Conseils généraux :**
+                    - Adopter une alimentation équilibrée à faible indice glycémique
+                    - Pratiquer une activité physique régulière (30 min/jour)
+                    - Maintenir une bonne hydratation
+                    - Réduire les sucres rapides et les aliments transformés
+                    - Effectuer des contrôles réguliers chez un professionnel
+                    - Respecter les traitements médicaux si prescrits
+                    """
+                )
+            else:
+                st.error("The model indicates a high estimated risk for the values entered.")
+                st.markdown(
+                    """
+                    **General guidance:**
+                    - Follow a low-glycemic balanced diet
+                    - Exercise regularly (30 min/day)
+                    - Stay hydrated
+                    - Avoid processed and sugary foods
+                    - Schedule regular check-ups
+                    - Follow medical prescriptions if any
+                    """
+                )
         else:
-            st.error("The model indicates a high estimated risk for the values entered.")
-            st.markdown(
-                """
-                **General guidance:**
-                - 🥗 Follow a low-glycemic balanced diet
-                - 🏃‍♂️ Exercise regularly (30 min/day)
-                - 💧 Stay hydrated
-                - 🚫 Avoid processed and sugary foods
-                - 📅 Schedule regular check-ups
-                - 💊 Follow medical prescriptions if any
-                """
-            )
-    else:
-        if LANG == "Français":
-            st.success("Le modèle indique un risque estimé faible pour les valeurs saisies.")
-            st.markdown(
-                """
-                **Conseils pour conserver une bonne santé :**
-                - 🥦 Mangez varié et évitez les excès de sucre
-                - 🚶‍♀️ Marchez régulièrement
-                - 📉 Surveillez votre poids et votre IMC
-                - 🧘 Réduisez le stress
-                - 🩺 Consultez votre médecin pour un suivi annuel
-                """
-            )
-        else:
-            st.success("The model indicates a low estimated risk for the values entered.")
-            st.markdown(
-                """
-                **Tips to maintain good health:**
-                - 🥦 Eat a varied diet and limit sugar
-                - 🚶‍♀️ Walk regularly
-                - 📉 Monitor your weight and BMI
-                - 🧘 Reduce stress
-                - 🩺 Visit your doctor for annual checkups
-                """
-            )
-    st.markdown("</div>", unsafe_allow_html=True)
+            if LANG == "Français":
+                st.success("Le modèle indique un risque estimé faible pour les valeurs saisies.")
+                st.markdown(
+                    """
+                    **Conseils pour conserver une bonne santé :**
+                    - Manger varié et limiter les excès de sucre
+                    - Marcher régulièrement
+                    - Surveiller son poids et son IMC
+                    - Réduire le stress
+                    - Consulter son médecin pour un suivi annuel
+                    """
+                )
+            else:
+                st.success("The model indicates a low estimated risk for the values entered.")
+                st.markdown(
+                    """
+                    **Tips to maintain good health:**
+                    - Eat a varied diet and limit sugar
+                    - Walk regularly
+                    - Monitor your weight and BMI
+                    - Reduce stress
+                    - Visit your doctor for annual checkups
+                    """
+                )
 
 
 def show_data_viz():
     try:
         df = pd.read_csv(DATA_PATH)
     except FileNotFoundError:
-        st.error("❌ Fichier 'diabetes.csv' introuvable dans le dossier 'data/'.")
+        st.error(
+            "Fichier 'diabetes.csv' introuvable dans le dossier 'data/'."
+            if LANG == "Français"
+            else "File 'diabetes.csv' not found in the 'data/' folder."
+        )
         return
 
     chart_palette = [PRIMARY, SECONDARY]
@@ -403,7 +440,11 @@ def show_data_viz():
         else "Explore the dataset used to train the model.",
     )
 
-    st.markdown("### 📌 Distribution de la variable cible (Outcome)")
+    st.markdown(
+        "### Distribution de la variable cible (Outcome)"
+        if LANG == "Français"
+        else "### Target variable distribution (Outcome)"
+    )
     fig1, ax1 = plt.subplots(figsize=(8, 4))
     sns.countplot(
         data=df,
@@ -425,14 +466,24 @@ def show_data_viz():
     st.pyplot(fig1)
     plt.close(fig1)
 
-    st.markdown("### 🔥 Corrélations entre les variables")
+    st.markdown(
+        "### Corrélations entre les variables"
+        if LANG == "Français"
+        else "### Correlations between variables"
+    )
     fig2, ax2 = plt.subplots(figsize=(10, 6))
-    sns.heatmap(df.corr(), annot=True, cmap="GnBu", ax=ax2)
+    sns.heatmap(df.corr(), annot=True, fmt=".2f", cmap="GnBu", ax=ax2)
     ax2.set_title("Matrice de corrélation" if LANG == "Français" else "Correlation matrix")
+    ax2.set_facecolor(BG)
+    fig2.patch.set_facecolor(BG)
     st.pyplot(fig2)
     plt.close(fig2)
 
-    st.markdown("### 🔍 Exploration d'une variable")
+    st.markdown(
+        "### Exploration d'une variable"
+        if LANG == "Français"
+        else "### Single-variable exploration"
+    )
     var = st.selectbox(
         "Choisissez une variable" if LANG == "Français" else "Choose a variable",
         df.columns[:-1],
@@ -446,7 +497,9 @@ def show_data_viz():
     st.pyplot(fig3)
     plt.close(fig3)
 
-    st.markdown("### 🧪 Boxplot par classe")
+    st.markdown(
+        "### Boxplot par classe" if LANG == "Français" else "### Boxplot by class"
+    )
     fig4, ax4 = plt.subplots(figsize=(8, 4))
     sns.boxplot(
         x="Outcome",
@@ -483,43 +536,38 @@ def show_model_performance():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown(
-            "#### 📊 Accuracy & AUC"
-            if LANG == "Français"
-            else "#### 📊 Accuracy & AUC"
-        )
+        st.markdown("#### Accuracy & AUC")
         try:
             st.image(str(PERF_CHART_PATH), width="stretch")
         except Exception:
             st.warning("Image de performance introuvable." if LANG == "Français" else "Performance image not found.")
 
     with col2:
-        st.markdown("#### 📈 Courbes ROC" if LANG == "Français" else "#### 📈 ROC Curves")
+        st.markdown("#### Courbes ROC" if LANG == "Français" else "#### ROC Curves")
         try:
             st.image(str(ROC_CHART_PATH), width="stretch")
         except Exception:
             st.warning("Image ROC introuvable." if LANG == "Français" else "ROC image not found.")
 
-    st.markdown('<div class="medical-card">', unsafe_allow_html=True)
-    if LANG == "Français":
-        st.markdown(
-            """
-            **Points clés :**
-            - 🏆 Le modèle GBDT obtient une **ROC AUC ≈ 96 %**
-            - ✅ Précision supérieure à **91 %**
-            - 📌 Meilleure séparation des classes par rapport à RF et XGBoost
-            """
-        )
-    else:
-        st.markdown(
-            """
-            **Key highlights:**
-            - 🏆 GBDT achieves **ROC AUC ≈ 96%**
-            - ✅ Accuracy above **91%**
-            - 📌 Strongest class separation compared to RF and XGBoost
-            """
-        )
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        if LANG == "Français":
+            st.markdown(
+                """
+                **Points clés :**
+                - Le modèle GBDT obtient une **ROC AUC ≈ 96 %**
+                - Précision supérieure à **91 %**
+                - Meilleure séparation des classes par rapport à RF et XGBoost
+                """
+            )
+        else:
+            st.markdown(
+                """
+                **Key highlights:**
+                - GBDT achieves **ROC AUC ≈ 96%**
+                - Accuracy above **91%**
+                - Strongest class separation compared to RF and XGBoost
+                """
+            )
 
 
 def show_bulk_prediction():
@@ -531,9 +579,9 @@ def show_bulk_prediction():
     )
 
     uploaded_file = st.file_uploader(
-        "📁 Importez un fichier CSV avec les données des patients"
+        "Importez un fichier CSV avec les données des patients"
         if LANG == "Français"
-        else "📁 Upload a CSV file with patient data",
+        else "Upload a CSV file with patient data",
         type=["csv"],
     )
 
@@ -560,9 +608,9 @@ def show_bulk_prediction():
         ]
         if list(df.columns) != expected_columns:
             st.error(
-                "❌ Le fichier doit contenir les colonnes exactes suivantes :"
+                "Le fichier doit contenir les colonnes exactes suivantes :"
                 if LANG == "Français"
-                else "❌ The file must contain the following exact columns:"
+                else "The file must contain the following exact columns:"
             )
             st.code(", ".join(expected_columns))
             return
@@ -580,21 +628,21 @@ def show_bulk_prediction():
             }
         )
 
-        st.success("✅ Prédictions générées !" if LANG == "Français" else "✅ Predictions generated!")
+        st.success("Prédictions générées." if LANG == "Français" else "Predictions generated.")
         st.dataframe(df, width="stretch")
 
         csv = df.to_csv(index=False).encode("utf-8")
         st.download_button(
-            label="📥 Télécharger les résultats" if LANG == "Français" else "📥 Download Results",
+            label="Télécharger les résultats" if LANG == "Français" else "Download Results",
             data=csv,
             file_name="predictions_result.csv",
             mime="text/csv",
         )
     else:
         st.info(
-            "📌 Veuillez importer un fichier pour commencer."
+            "Veuillez importer un fichier pour commencer."
             if LANG == "Français"
-            else "📌 Please upload a file to begin."
+            else "Please upload a file to begin."
         )
 
 

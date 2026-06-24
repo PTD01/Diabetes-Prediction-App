@@ -62,45 +62,30 @@ def show_about_project(lang: str) -> None:
 def show_researcher_info(lang: str) -> None:
     if lang == "Français":
         render_page_header(
-            "Informations de recherche",
-            "Informations éditables à compléter avant la soutenance.",
+            "Équipe de recherche",
+            "Projet de thèse sur la prédiction du risque de diabète.",
         )
-        labels = {
-            "Étudiant / Chercheur": "Darryl MOMO",
-            "Encadrant": "[À compléter]",
-            "Institution": "[Hôpital / Université à compléter]",
-            "Département": "[À compléter]",
+        fields = {
+            "Étudiants": "David Ben Zaza, Darryl Momo",
+            "Encadrants": "Pr Mve et Pr Bediang",
+            "Institution": "CHUY et HGOPY",
+            "Département": "Gynécologie-obstétrique",
         }
-        thesis_title = "Conception et implémentation d'une plateforme de prédiction du risque de diabète"
-        field = "Santé numérique · Machine Learning · Aide à la décision clinique"
-        contact_title = "Contact du projet"
     else:
         render_page_header(
-            "Research information",
-            "Editable information to complete before the thesis defense.",
+            "Research Team",
+            "Thesis project on diabetes risk prediction.",
         )
-        labels = {
-            "Student / Researcher": "Darryl MOMO",
-            "Supervisor": "[To complete]",
-            "Institution": "[Hospital / University to complete]",
-            "Department": "[To complete]",
+        fields = {
+            "Students": "David Ben Zaza, Darryl Momo",
+            "Supervisors": "Pr Mve and Pr Bediang",
+            "Institution": "CHUY and HGOPY",
+            "Department": "Obstetrics and Gynecology",
         }
-        thesis_title = "Design and implementation of a diabetes risk prediction platform"
-        field = "Digital health · Machine Learning · Clinical decision support"
-        contact_title = "Project contact"
 
     with st.container(border=True):
-        st.markdown(f"### {thesis_title}")
-        st.caption(field)
-        for label, value in labels.items():
-            st.markdown(f"**{label}:** {value}")
-
-    with st.expander(contact_title):
-        st.markdown(
-            "Email: darrylmomo237@gmail.com  \n"
-            "LinkedIn: [Darryl Momo](https://www.linkedin.com/in/darryl-momo)  \n"
-            "GitHub: [Diabetes Prediction App](https://github.com/Darryl237/Diabetes-Prediction-App)"
-        )
+        for label, value in fields.items():
+            st.markdown(f"**{label} :** {value}" if lang == "Français" else f"**{label}:** {value}")
 
 
 def show_how_it_works(lang: str) -> None:
@@ -111,11 +96,10 @@ def show_how_it_works(lang: str) -> None:
         )
         steps = [
             ("1", "Saisie", "Huit variables cliniques sont renseignées dans le formulaire."),
-            ("2", "Prétraitement", "Le scaler existant normalise les valeurs saisies."),
-            ("3", "Inférence", "Le modèle Gradient Boosting calcule la classe et la probabilité."),
+            ("2", "Préparation", "Les valeurs saisies sont normalisées avant l'analyse."),
+            ("3", "Analyse", "Le modèle calcule le risque estimé et la probabilité."),
             ("4", "Présentation", "L'interface affiche le risque estimé et les recommandations."),
         ]
-        note = "Le flux backend, les artefacts du modèle et les règles de prédiction restent inchangés."
     else:
         render_page_header(
             "How the system works",
@@ -123,11 +107,10 @@ def show_how_it_works(lang: str) -> None:
         )
         steps = [
             ("1", "Input", "Eight clinical variables are entered in the form."),
-            ("2", "Preprocessing", "The existing scaler normalizes the entered values."),
-            ("3", "Inference", "The Gradient Boosting model calculates the class and probability."),
+            ("2", "Preparation", "The entered values are normalized before analysis."),
+            ("3", "Analysis", "The model computes the estimated risk and probability."),
             ("4", "Presentation", "The interface displays the estimated risk and recommendations."),
         ]
-        note = "The backend flow, model artifacts and prediction rules remain unchanged."
 
     cols = st.columns(4)
     for col, (number, title, text) in zip(cols, steps):
@@ -136,7 +119,6 @@ def show_how_it_works(lang: str) -> None:
                 st.caption(f"ÉTAPE {number}" if lang == "Français" else f"STEP {number}")
                 st.markdown(f"#### {title}")
                 st.write(text)
-    st.info(note)
 
 
 def show_demo_guide(lang: str) -> None:
